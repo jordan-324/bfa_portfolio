@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D Orbit Carousel</title>
+<link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+<div id="name-text">jordan medina</div>
+
+<!-- Plus toggle and dropdown menu -->
+<div id="menu">
+  <div id="menu-toggle" aria-label="toggle projects menu"></div>
+  <div id="menu-panel" class="hidden"></div>
+  <!-- rows will be injected via JS -->
+</div>
+
+<div id="gallery-window"></div>
+
+<div id="modal">
+  <div id="modal-content">
+    <h3 id="modal-title"></h3>
+    <iframe id="modal-video" src="" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+    <img id="modal-image" src="" alt="">
+    <div id="modal-text"></div>
+  </div>
+  <button id="modal-close">close</button>
+</div>
+
+<script>
+// ================== Carousel Setup ==================
+const iconCount = 10;
+const iconSize = 100;
+const container = document.getElementById('gallery-window');
+const icons = [];
+let angle = 0;
+let velocity = 0;
+let baseSpeed = 0.0012; // slower orbit speed
+let radius = 280; // orbit radius
+let hoveredIndex = -1; // track which icon is being hovered
+let orbitPaused = false; // pause/resume control
+
+// Custom projects with proper titles and descriptions
+const projects = [
+  {title: "immersive gaming", description: "Trimpath animation inspired by gaming advertisments"},
+  {title: "404", description: "Illustration of an Error 404 page inspired by old flash games."},
+  {title: "mourning flight", description: "Digital collage using analog texture and guache painting for J-card cassete tape designed and formatted for physical release. Album cover for Colonal Macabre - mourning flight"},
+  {title: "momentos", description: "In my final project I chose to contextualize inanimate objects. I chose objects that are typically used to track and trace time. My goal was to put an emphasis on these items and to bring out different feelings through their presentation. I found that many of these objects bring back different memories to me, as they all ended up in my art studio at different times, and with different stories. All of these items represent a passage in time. For example, Every time a candle is used, its appearance is altered. In the past, people would use this to track how much time had passed since it was lit. In my video, I think of all the candles shot as a human life and a sort of story appears. The clock symbolizes a pause in time. The flashing \"12:00 am\" always brings me memories from when I was a child and the clocks in my kitchen needed to be reset. It was probably the first time in my entire life I had ever thought to myself \"what if time stayed still?\" The camera represents capturing a visualization of time and space. I think the camera is one of the greatest creations of mankind. Aside from making art with it, it is a way for humans to actually see a glimpse into their past. The CD, similar to how the camera documents and records memory, is a place for audio to be stored. Hearing certain songs or sounds can trigger associative memories that people may have forgotten about. For example, when a song you haven't heard in a while comes on and you think to yourself, \"This brings me back to middle school!\" The mouse toy is a personal memento of mine, I wanted to also express physical forms of memory. For example, oftentimes people will collect trinkets and such when on vacation, as a reminder of the time that they spent there. I shot all of the objects I had with an old Sony Handycam rigged up to an old CRT tv, I then shot the screen so that I had captured the natural grain from the old tv. I became very focused on capturing this grain, and playing with light and reflections because I felt they expressed a message of time in the present moment. I used many practical effects for my project through set designing, but I also used a ton of different effects on the video. Such as Various blurs, dissolves, lighting, time remapping, masks, lumetri, blending options, 3D and more. I lost track of everything I used, however I used most effects in a way to make the video feel somewhat seamless, but also having different \"sections\" throughout. In the end sequence I wanted to break free of any structure. A liminal space, full of boundless memories. I created this section to feel like life flashing before one's eyes."},
+  {title: "diary of a street clown", description: "Digital collage from scanned guache painting. Album cover for Colonel Macabre - Diary of a Street Clown."},
+  {title: "arrival/departure", description: "For this project my objective was to capture the chaotic energy of being in a train station in Japan. I wanted to put an emphasis on movement, specifically being in one destination and taking transportation to end up at another. I find it beautiful how much one's perception of life can change because of one's environment. In this video, I chose to capture everyday life for me while using public transportation during my first time visiting Japan. I shot various clips of me doing the same activity in different locations. I chose the train station because I frequented different stations everyday and it took up a large part of my days. I have clips of me outside the train stations, and entering the stations. I have clips of details and people in those train stations. I have clips of me entering the trains and riding the trains. I have clips of me waiting to exit the trains and having to be patient while dealing with the vast amount of people doing the same activity as me."},
+  {title: "rain+growth", description: "My goal is to express the parallels between the experience of nature and what it is to be human. By highlighting what the rain provides for nature, I’m playing with the themes of how as humans our bad, or \"rainy\" days often lead to our eventual growth. I chose to steer away from a narrative to avoid being too literal. Like many conceptual art pieces, I want the viewer to have come to the conclusion themselves about making the connection. I feel the message would come off stronger if it was open for interpretation because the viewer can find their own message. Overall, the sound and video sequences are quick and to the point in an eerily yet entertaining nature that keeps one's attention. I experimented by changing the aspect ratio to a 1:1 ratio because I think it would look more interesting in its installation. I would blow it up really big with a projector where viewers would experience the piece by immersing themselves by putting on headphones. I used many different techniques to create this project. I’ve played around with Lumetri effects on certain clips to play with the color grading to make it feel more cohesive. I also used different masking effects and vignettes where I wanted to dramatize and highlight certain clips. I also tried out new effects, such as the turbulent displacement effect feature to create a ripple like effect. I experimented a lot with the transitions such as various clips fading in and out of each other. I even used a matte tracking effect to transition from one clip to another. I played around with playback speed and even chopped up the sound to align it with the sequencing of the video. I was able to completely score the video with the emotion I wanted to evoke. I was able to change the emotion of the clips using sound design. I was able to intensify moments using levels of audio mixing. I prefer viewers to experience the audio with headphones."},
+  {title: "photo—Diary", description: "For a very long time now I have used a camera as a means to logging memory by just capturing a moment. In my practice with photography, I became obsessed with the idea of snapshot photography. Just capturing a glimpse of time as it exists. Funny enough, I took myself too seriously considering this was my \"practice\" of photography and would only want to capture these moments on film, and then I'd get in my head about if I should waste an exposure on every urge I had to shoot because what if the moment wasn't interesting enough. However, once I felt like this I noticed I would just use the camera on my phone to capture it because it didn't \"matter\", however I would still shoot it anyways. Then I started to hate the idea that photography had to be shot or presented a certain way to be considered \"actual photography\" I naturally started to only ever really use my phone for photography because I always had it with me so, whenever I was out and about I would just use that, as it felt like a more organic way to shoot and document whatever street, person, or weird scene I was nearby. I collected a ton of photos over the last 10 years of shooting like this, but I basically only hoard most of this collection for myself. I started to show these photos in different exhibition installations but that's really the only way these photos have ever been seen by others. With this webpage, my goal was to give any random person a chance to take a glimpse into as many photos from my camera roll as possible. Even though my camera roll is very personal to me. I feel like it is the best way for me to make a \"self portrait\" because it gives someone the opportunity to see the things I see."},
+  {title: "memorymirror", description: "An interactive art installation exploring themes of memory and reflection."},
+  {title: "headlock", description: "Digital Illustration formatted for risograph printing."}
+];
+
+// Create 3D icons
+for(let i=0;i<iconCount;i++){
+  const wrapper = document.createElement('div');
+  wrapper.className = 'icon-wrapper';
+  wrapper.style.width = iconSize+'px';
+  wrapper.style.height = iconSize+'px';
+
+  const front = document.createElement('div');
+  front.className = 'icon-face icon-front';
+  
+  // Special case for Icon 1 - display trimpath.jpg image
+  if (i === 0) {
+    front.innerHTML = `<img src="trimpath.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">`;
+  } 
+  // Special case for Icon 2 - display 404 (2).jpg image
+  else if (i === 1) {
+    front.innerHTML = `<img src="404 (2).jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">`;
+  } 
+  // Special case for Icon 3 - display final(fr?).jpg image
+  else if (i === 2) {
+    front.innerHTML = `<img src="final%28fr%3F%29.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">`;
+  } 
+  // Special case for Icon 4 - display candle.jpg image
+  else if (i === 3) {
+    front.innerHTML = `<img src="candle.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">`;
+  } 
+  // Special case for Icon 5 - display final3.jpg image
+  else if (i === 4) {
+    front.innerHTML = `<img src="final3.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">`;
+  } 
+  // Special case for Icon 6 - display tracks.jpg image
+  else if (i === 5) {
+    front.innerHTML = `<img src="tracks.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">`;
+  } 
+  // Special case for Icon 7 - display flower.jpg image
+  else if (i === 6) {
+    front.innerHTML = `<img src="flower.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">`;
+  } 
+  // Special case for Icon 8 - display stalk.jpg image
+  else if (i === 7) {
+    front.innerHTML = `<img src="stalk.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">`;
+  } 
+  // Special case for Icon 9 - display memorymirror.jpg image
+  else if (i === 8) {
+    front.innerHTML = `<img src="memorymirror.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">`;
+  } 
+  // Special case for Icon 10 - display headlock.jpg image
+  else if (i === 9) {
+    front.innerHTML = `<img src="headlock.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">`;
+  }
+  else {
+  front.innerText = projects[i].title;
+  }
+
+  const back = document.createElement('div');
+  back.className = 'icon-face icon-back';
+  
+  // Special case for Icon 1 - display trimpath.jpg image flipped backwards
+  if (i === 0) {
+    back.innerHTML = `<img src="trimpath.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; transform: scaleX(-1);">`;
+  } 
+  // Special case for Icon 2 - display 404 (2).jpg image flipped backwards
+  else if (i === 1) {
+    back.innerHTML = `<img src="404 (2).jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; transform: scaleX(-1);">`;
+  } 
+  // Special case for Icon 3 - display final(fr?).jpg image flipped backwards
+  else if (i === 2) {
+    back.innerHTML = `<img src="final%28fr%3F%29.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; transform: scaleX(-1);">`;
+  } 
+  // Special case for Icon 4 - display candle.jpg image flipped backwards
+  else if (i === 3) {
+    back.innerHTML = `<img src="candle.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; transform: scaleX(-1);">`;
+  } 
+  // Special case for Icon 5 - display final3.jpg image flipped backwards
+  else if (i === 4) {
+    back.innerHTML = `<img src="final3.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; transform: scaleX(-1);">`;
+  } 
+  // Special case for Icon 6 - display tracks.jpg image flipped backwards
+  else if (i === 5) {
+    back.innerHTML = `<img src="tracks.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; transform: scaleX(-1);">`;
+  } 
+  // Special case for Icon 7 - display flower.jpg image flipped backwards
+  else if (i === 6) {
+    back.innerHTML = `<img src="flower.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; transform: scaleX(-1);">`;
+  } 
+  // Special case for Icon 8 - display stalk.jpg image flipped backwards
+  else if (i === 7) {
+    back.innerHTML = `<img src="stalk.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; transform: scaleX(-1);">`;
+  } 
+  // Special case for Icon 9 - display memorymirror.jpg image flipped backwards
+  else if (i === 8) {
+    back.innerHTML = `<img src="memorymirror.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; transform: scaleX(-1);">`;
+  } 
+  // Special case for Icon 10 - display headlock.jpg image flipped backwards
+  else if (i === 9) {
+    back.innerHTML = `<img src="headlock.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; transform: scaleX(-1);">`;
+  }
+  else {
+  back.innerText = 'Back ' + projects[i].title;
+  }
+
+  wrapper.appendChild(front);
+  wrapper.appendChild(back);
+
+  container.appendChild(wrapper);
+  icons.push(wrapper);
+
+  // Add hover effects
+  wrapper.addEventListener('mouseenter', () => {
+    hoveredIndex = i;
+    wrapper.classList.add('hovered');
+  });
+  
+  wrapper.addEventListener('mouseleave', () => {
+    hoveredIndex = -1;
+    wrapper.classList.remove('hovered');
+  });
+
+  // Modal click
+  wrapper.addEventListener('click', ()=>{
+    const modalTitle = document.getElementById('modal-title');
+    const modalText = document.getElementById('modal-text');
+    const modalVideo = document.getElementById('modal-video');
+    const modalImage = document.getElementById('modal-image');
+    
+    modalTitle.innerText = projects[i].title;
+    modalText.innerHTML = projects[i].description;
+    
+    // Special case for Icon 1 - show Vimeo video
+    if (i === 0) {
+      modalVideo.src = 'https://player.vimeo.com/video/799283901?h=59a9a2cdd5';
+      modalVideo.style.display = 'block';
+      modalImage.style.display = 'none';
+      modalText.style.display = 'block'; // Show text below video
+    } 
+    // Special case for Icon 2 - show image
+    else if (i === 1) {
+      modalImage.src = '404 (2).jpg';
+      modalImage.style.display = 'block';
+      modalVideo.style.display = 'none';
+      modalText.style.display = 'block'; // Show text with image
+    } 
+    // Special case for Icon 3 - show image
+    else if (i === 2) {
+      modalImage.src = 'final%28fr%3F%29.jpg';
+      modalImage.style.display = 'block';
+      modalVideo.style.display = 'none';
+      modalText.style.display = 'block'; // Show text with image
+    } 
+    // Special case for Icon 4 - show Vimeo video
+    else if (i === 3) {
+      modalVideo.src = 'https://player.vimeo.com/video/1131181929?h=share&fl=sv&fe=ci';
+      modalVideo.style.display = 'block';
+      modalImage.style.display = 'none';
+      modalText.style.display = 'block'; // Show text below video
+    } 
+    // Special case for Icon 5 - show image
+    else if (i === 4) {
+      modalImage.src = 'final3.jpg';
+      modalImage.style.display = 'block';
+      modalVideo.style.display = 'none';
+      modalText.style.display = 'block'; // Show text with image
+    } 
+    // Special case for Icon 6 - show Vimeo video
+    else if (i === 5) {
+      modalVideo.src = 'https://player.vimeo.com/video/1131186735?h=share&fl=sv&fe=ci';
+      modalVideo.style.display = 'block';
+      modalImage.style.display = 'none';
+      modalText.style.display = 'block'; // Show text below video
+    } 
+    // Special case for Icon 7 - show YouTube video
+    else if (i === 6) {
+      modalVideo.src = 'https://www.youtube.com/embed/0bj4p6spy1k';
+      modalVideo.style.display = 'block';
+      modalImage.style.display = 'none';
+      modalText.style.display = 'block'; // Show text below video
+    } 
+    // Special case for Icon 8 - show website link and description
+    else if (i === 7) {
+      modalVideo.style.display = 'none';
+      modalImage.style.display = 'none';
+      modalText.style.display = 'block';
+      modalText.innerHTML = `
+        <p style="text-align: center; margin-bottom: 20px;"><a href="https://jordan-324.github.io/fotoDiary/photo-diary/index.html" target="_blank" style="color: #4A90E2; text-decoration: none; font-size: 18px; font-weight: bold;">visit →</a></p>
+        <p style="margin-top: 15px; line-height: 1.4;">
+          For a very long time now I have used a camera as a means to logging memory by just capturing a moment. In my practice with photography, I became obsessed with the idea of snapshot photography. Just capturing a glimpse of time as it exists. Funny enough, I took myself too seriously considering this was my "practice" of photography and would only want to capture these moments on film, and then I'd get in my head about if I should waste an exposure on every urge I had to shoot because what if the moment wasn't interesting enough. However, once I felt like this I noticed I would just use the camera on my phone to capture it because it didn't "matter", however I would still shoot it anyways. Then I started to hate the idea that photography had to be shot or presented a certain way to be considered "actual photography" I naturally started to only ever really use my phone for photography because I always had it with me so, whenever I was out and about I would just use that, as it felt like a more organic way to shoot and document whatever street, person, or weird scene I was nearby. I collected a ton of photos over the last 10 years of shooting like this, but I basically only hoard most of this collection for myself. I started to show these photos in different exhibition installations but that's really the only way these photos have ever been seen by others. With this webpage, my goal was to give any random person a chance to take a glimpse into as many photos from my camera roll as possible. Even though my camera roll is very personal to me. I feel like it is the best way for me to make a "self portrait" because it gives someone the opportunity to see the things I see.
+        </p>
+      `;
+    } 
+    // Special case for Icon 9 - show YouTube video and Memory Mirror description
+    else if (i === 8) {
+      modalVideo.src = 'https://www.youtube.com/embed/Lh6tXF6oIMs';
+      modalVideo.style.display = 'block';
+      modalImage.style.display = 'none';
+      modalText.style.display = 'block';
+      modalText.innerHTML = `
+        <p><strong>memorymirror + in real time</strong></p>
+        <p style="margin-top: 15px; line-height: 1.4;">
+          An interactive art installation made in collaboration by Jordan Medina and Jared Gacusan in conjunction with the San Jose Museum of Art's Art Learning Lab Program.
+        </p>
+        <p style="line-height: 1.4;">
+          A two part piece installation of a single-channel video of a live security camera that displays viewers through a pepper's ghost illusion as they approach the piece.
+        </p>
+        <p style="line-height: 1.4;">
+          A three-channel looping video with audio titled “thesemoments” by Alex Manriquez. <em>(00:06:22 minutes)</em>
+        </p>
+        <p style="margin-top: 10px; font-style: italic; line-height: 1.4;">
+          “How do memories live on without a way of recording them? A monolithic surveillance mirror displays the engagement of visitors by using a security camera and a pepper’s ghost illusion to make them appear as if a hologram. Visitors are asked to engage and interact with the work in these spaces. The work depends on the interaction of a viewer for completion. As the viewer observes the piece, the piece simultaneously observes the viewer. After that, the piece temporarily displays its observations of the viewer, as a performance part of the art. Forcing a looping state of introspection between art and viewer — until one component of the loop leaves the presence of the other. If your image disappears as you step out of the piece's presence: Where does it go?”
+        </p>
+        <p style="line-height: 1.4;">
+          In Real Time, they ask visitors to engage with the objects to observe the effect of the illusion. The video is shot to highlight different keepsake objects typically used as tools to either document, trace, or record time, and moments in life.
+        </p>
+        <p style="line-height: 1.4;">
+          Gacusan and Medina are ultimately posing questions: Do the things we leave online, such as photos, text, and personal data, define who we are? Memories are saved as data, moving through digital storage discs, drives, and the cloud. Some people keep photographs, hand-written letters, books, and mementos, which are all tools we hold onto to remember moments in our lives but over time. Pages of books can crumble, servers may stop working, even our own memories can fade. Do these memories live on without a way to record them? How can we ensure future generations can see and remember our past? They poke fun at the paralleling themes of the hippocampus in the human brain and storage devices in computers and how both encode, store and retrieve short-term or Random Access-memories.
+        </p>
+        <p style="margin-top: 10px; font-style: italic;">
+          memorymirror and in real time ran alongside SJMA's Encode, Store, Retrieve exhibition (December 8, 2023 – April 21, 2024)
+        </p>
+      `;
+    } 
+    // Special case for Icon 10 - show image
+    else if (i === 9) {
+      modalImage.src = 'headlock.jpg';
+      modalImage.style.display = 'block';
+      modalVideo.style.display = 'none';
+      modalText.style.display = 'block'; // Show text with image
+    }
+    else {
+      modalVideo.style.display = 'none';
+      modalImage.style.display = 'none';
+      modalText.style.display = 'block'; // Show text for other icons
+    }
+    
+    document.getElementById('modal').style.display = 'flex';
+  });
+
+  // Hover events removed for easier scrolling
+}
+
+// Modal close
+document.getElementById('modal-close').addEventListener('click', ()=>{
+  const modalVideo = document.getElementById('modal-video');
+  const modalText = document.getElementById('modal-text');
+  const modalImage = document.getElementById('modal-image');
+  
+  // Stop video and reset modal
+  modalVideo.src = '';
+  modalVideo.style.display = 'none';
+  modalImage.style.display = 'none';
+  modalImage.classList.remove('expanded');
+  modalText.style.display = 'block';
+  
+  document.getElementById('modal').style.display = 'none';
+});
+
+// Drag rotation
+let dragging = false;
+let dragStartX = 0;
+
+container.addEventListener('mousedown', e=>{
+  dragging = true;
+  dragStartX = e.clientX;
+});
+container.addEventListener('mousemove', e=>{
+  if(dragging){
+    const delta = e.clientX - dragStartX;
+    velocity = delta * 0.005;
+    dragStartX = e.clientX;
+  }
+});
+container.addEventListener('mouseup', ()=>dragging=false);
+container.addEventListener('mouseleave', ()=>dragging=false);
+
+container.addEventListener('touchstart', e=>{
+  dragging = true;
+  dragStartX = e.touches[0].clientX;
+});
+container.addEventListener('touchmove', e=>{
+  if(dragging){
+    const delta = e.touches[0].clientX - dragStartX;
+    velocity = delta * 0.005;
+    dragStartX = e.touches[0].clientX;
+  }
+});
+container.addEventListener('touchend', ()=>dragging=false);
+
+// ================== Animation ==================
+function animate() {
+  requestAnimationFrame(animate);
+
+  const centerX = container.clientWidth / 2;
+  const centerY = container.clientHeight / 2;
+
+  // Continuous smooth rotation, pause-aware
+  if (!orbitPaused) {
+    angle += baseSpeed + velocity;
+  }
+  velocity *= 0.95; // slower decay for smoother movement
+
+  icons.forEach((wrapper,i)=>{
+    const a = (2*Math.PI/iconCount)*i + angle;
+    const x = radius * Math.sin(a);
+    const z = radius * Math.cos(a);
+    const y = Math.sin(Date.now()*0.002 + i) * 5;
+
+    // Base scale based on orbit depth
+    let scale = 0.5 + 0.7*(Math.cos(a)+1)/2;
+    
+    // Add hover expansion effect
+    if (hoveredIndex === i) {
+      scale *= 1.2; // expand on hover
+    }
+
+    const rotY = a * 180/Math.PI;
+    const posX = centerX + x - iconSize/2;
+    const posY = centerY + y - iconSize/2;
+
+    wrapper.style.transform = `
+      translateX(${posX}px)
+      translateY(${posY}px)
+      translateZ(${z}px)
+      rotateY(${rotY}deg)
+      scale(${scale})
+    `;
+    wrapper.style.zIndex = Math.floor(scale*100);
+  });
+}
+
+// ================== Menu (Plus toggle with dropdown) ==================
+const menuToggle = document.getElementById('menu-toggle');
+const menuPanel = document.getElementById('menu-panel');
+
+// build panel list from projects
+// Add special About/Contact row at the top
+const aboutContactRow = document.createElement('div');
+aboutContactRow.className = 'menu-row-special';
+aboutContactRow.innerHTML = `
+  <div class="about-contact-container">
+    <div class="about-button">about</div>
+    <div class="contact-button">contact</div>
+  </div>
+`;
+menuPanel.appendChild(aboutContactRow);
+
+// Add event listeners for about and contact buttons
+aboutContactRow.querySelector('.about-button').addEventListener('click', () => {
+  openAboutModal();
+});
+
+aboutContactRow.querySelector('.contact-button').addEventListener('click', () => {
+  openContactModal();
+});
+
+projects.forEach((p, idx) => {
+  const row = document.createElement('div');
+  row.className = 'menu-row';
+  row.textContent = p.title;
+  // Hovering a title brings its icon to the front (preview) and pauses orbit
+  row.addEventListener('mouseenter', () => {
+    focusIcon(idx);
+    orbitPaused = true;
+  });
+  row.addEventListener('click', () => {
+    // position the icon to the front and open its modal
+    focusIcon(idx);
+    orbitPaused = true;
+    // directly open the modal for this icon (no need to simulate click)
+    openModalForIcon(idx);
+  });
+  menuPanel.appendChild(row);
+});
+
+function openMenu() {
+  menuPanel.classList.remove('hidden');
+  menuPanel.classList.add('open');
+  menuToggle.classList.add('open');
+  orbitPaused = true;
+}
+
+function closeMenu() {
+  menuPanel.classList.remove('open');
+  menuPanel.classList.add('hidden');
+  menuToggle.classList.remove('open');
+  orbitPaused = false;
+}
+
+menuToggle.addEventListener('click', () => {
+  if (menuPanel.classList.contains('open')) closeMenu(); else openMenu();
+});
+
+menuPanel.addEventListener('mouseenter', () => { orbitPaused = true; });
+menuPanel.addEventListener('mouseleave', () => { if (menuPanel.classList.contains('open')) orbitPaused = false; });
+
+// Focus a given icon at the front of the carousel
+function focusIcon(index) {
+  const targetA = (2*Math.PI/iconCount)*index; // want this index at front (cos(a)=1)
+  angle = -targetA;
+}
+
+// Open modal for a specific icon index
+function openModalForIcon(i) {
+  const modalTitle = document.getElementById('modal-title');
+  const modalText = document.getElementById('modal-text');
+  const modalVideo = document.getElementById('modal-video');
+  const modalImage = document.getElementById('modal-image');
+  
+  modalTitle.innerText = projects[i].title;
+  modalText.innerHTML = projects[i].description;
+  
+  // Special case for Icon 1 - show Vimeo video
+  if (i === 0) {
+    modalVideo.src = 'https://player.vimeo.com/video/799283901?h=59a9a2cdd5';
+    modalVideo.style.display = 'block';
+    modalImage.style.display = 'none';
+    modalText.style.display = 'block'; // Show text below video
+  } 
+  // Special case for Icon 2 - show image
+  else if (i === 1) {
+    modalImage.src = '404 (2).jpg';
+    modalImage.style.display = 'block';
+    modalVideo.style.display = 'none';
+    modalText.style.display = 'block'; // Show text with image
+  } 
+  // Special case for Icon 3 - show image
+  else if (i === 2) {
+    modalImage.src = 'final%28fr%3F%29.jpg';
+    modalImage.style.display = 'block';
+    modalVideo.style.display = 'none';
+    modalText.style.display = 'block'; // Show text with image
+  } 
+  // Special case for Icon 4 - show Vimeo video
+  else if (i === 3) {
+    modalVideo.src = 'https://player.vimeo.com/video/1131181929?h=share&fl=sv&fe=ci';
+    modalVideo.style.display = 'block';
+    modalImage.style.display = 'none';
+    modalText.style.display = 'block'; // Show text below video
+  } 
+  // Special case for Icon 5 - show image
+  else if (i === 4) {
+    modalImage.src = 'final3.jpg';
+    modalImage.style.display = 'block';
+    modalVideo.style.display = 'none';
+    modalText.style.display = 'block'; // Show text with image
+  } 
+  // Special case for Icon 6 - show Vimeo video
+  else if (i === 5) {
+    modalVideo.src = 'https://player.vimeo.com/video/1131186735?h=share&fl=sv&fe=ci';
+    modalVideo.style.display = 'block';
+    modalImage.style.display = 'none';
+    modalText.style.display = 'block'; // Show text below video
+  } 
+  // Special case for Icon 7 - show YouTube video
+  else if (i === 6) {
+    modalVideo.src = 'https://www.youtube.com/embed/0bj4p6spy1k';
+    modalVideo.style.display = 'block';
+    modalImage.style.display = 'none';
+    modalText.style.display = 'block'; // Show text below video
+  } 
+  // Special case for Icon 8 - show website link and description
+  else if (i === 7) {
+    modalVideo.style.display = 'none';
+    modalImage.style.display = 'none';
+    modalText.style.display = 'block';
+    modalText.innerHTML = `
+      <p style="text-align: center; margin-bottom: 20px;"><a href="https://jordan-324.github.io/fotoDiary/photo-diary/index.html" target="_blank" style="color: #4A90E2; text-decoration: none; font-size: 18px; font-weight: bold;">visit →</a></p>
+      <p style="margin-top: 15px; line-height: 1.4;">
+        For a very long time now I have used a camera as a means to logging memory by just capturing a moment. In my practice with photography, I became obsessed with the idea of snapshot photography. Just capturing a glimpse of time as it exists. Funny enough, I took myself too seriously considering this was my "practice" of photography and would only want to capture these moments on film, and then I'd get in my head about if I should waste an exposure on every urge I had to shoot because what if the moment wasn't interesting enough. However, once I felt like this I noticed I would just use the camera on my phone to capture it because it didn't "matter", however I would still shoot it anyways. Then I started to hate the idea that photography had to be shot or presented a certain way to be considered "actual photography" I naturally started to only ever really use my phone for photography because I always had it with me so, whenever I was out and about I would just use that, as it felt like a more organic way to shoot and document whatever street, person, or weird scene I was nearby. I collected a ton of photos over the last 10 years of shooting like this, but I basically only hoard most of this collection for myself. I started to show these photos in different exhibition installations but that's really the only way these photos have ever been seen by others. With this webpage, my goal was to give any random person a chance to take a glimpse into as many photos from my camera roll as possible. Even though my camera roll is very personal to me. I feel like it is the best way for me to make a "self portrait" because it gives someone the opportunity to see the things I see.
+      </p>
+    `;
+  } 
+  // Special case for Icon 9 - show YouTube video and Memory Mirror description
+  else if (i === 8) {
+    modalVideo.src = 'https://www.youtube.com/embed/Lh6tXF6oIMs';
+    modalVideo.style.display = 'block';
+    modalImage.style.display = 'none';
+    modalText.style.display = 'block';
+    modalText.innerHTML = `
+      <p><strong>memorymirror + in real time</strong></p>
+      <p style="margin-top: 15px; line-height: 1.4;">
+        An interactive art installation made in collaboration by Jordan Medina and Jared Gacusan in conjunction with the San Jose Museum of Art's Art Learning Lab Program.
+      </p>
+      <p style="line-height: 1.4;">
+        A two part piece installation of a single-channel video of a live security camera that displays viewers through a pepper's ghost illusion as they approach the piece.
+      </p>
+      <p style="line-height: 1.4;">
+        A three-channel looping video with audio titled "thesemoments" by Alex Manriquez. <em>(00:06:22 minutes)</em>
+      </p>
+      <p style="margin-top: 10px; font-style: italic; line-height: 1.4;">
+        "How do memories live on without a way of recording them? A monolithic surveillance mirror displays the engagement of visitors by using a security camera and a pepper's ghost illusion to make them appear as if a hologram. Visitors are asked to engage and interact with the work in these spaces. The work depends on the interaction of a viewer for completion. As the viewer observes the piece, the piece simultaneously observes the viewer. After that, the piece temporarily displays its observations of the viewer, as a performance part of the art. Forcing a looping state of introspection between art and viewer — until one component of the loop leaves the presence of the other. If your image disappears as you step out of the piece's presence: Where does it go?"
+      </p>
+      <p style="line-height: 1.4;">
+        In Real Time, they ask visitors to engage with the objects to observe the effect of the illusion. The video is shot to highlight different keepsake objects typically used as tools to either document, trace, or record time, and moments in life.
+      </p>
+      <p style="line-height: 1.4;">
+        Gacusan and Medina are ultimately posing questions: Do the things we leave online, such as photos, text, and personal data, define who we are? Memories are saved as data, moving through digital storage discs, drives, and the cloud. Some people keep photographs, hand-written letters, books, and mementos, which are all tools we hold onto to remember moments in our lives but over time. Pages of books can crumble, servers may stop working, even our own memories can fade. Do these memories live on without a way to record them? How can we ensure future generations can see and remember our past? They poke fun at the paralleling themes of the hippocampus in the human brain and storage devices in computers and how both encode, store and retrieve short-term or Random Access-memories.
+      </p>
+      <p style="margin-top: 10px; font-style: italic;">
+        memorymirror and in real time ran alongside SJMA's Encode, Store, Retrieve exhibition (December 8, 2023 – April 21, 2024)
+      </p>
+    `;
+  } 
+  // Special case for Icon 10 - show image
+  else if (i === 9) {
+    modalImage.src = 'headlock.jpg';
+    modalImage.style.display = 'block';
+    modalVideo.style.display = 'none';
+    modalText.style.display = 'block'; // Show text with image
+  }
+  else {
+    modalVideo.style.display = 'none';
+    modalImage.style.display = 'none';
+    modalText.style.display = 'block'; // Show text for other icons
+  }
+  
+  document.getElementById('modal').style.display = 'flex';
+}
+
+// Open About modal
+function openAboutModal() {
+  const modalTitle = document.getElementById('modal-title');
+  const modalText = document.getElementById('modal-text');
+  const modalVideo = document.getElementById('modal-video');
+  const modalImage = document.getElementById('modal-image');
+  // Ensure menu doesn't overlay the modal
+  if (typeof closeMenu === 'function') { try { closeMenu(); } catch (e) {} }
+  
+  modalTitle.innerText = 'about';
+  modalVideo.style.display = 'none';
+  modalImage.style.display = 'none';
+  modalText.style.display = 'block';
+  modalText.innerHTML = `
+    <p style="line-height: 1.6; text-align: left;">
+      Jordan Medina is a multimedia artist from San José, California, whose work spans video, digital collage, photography, installation, and painting. Rooted in the experiences of working-class communities, Medina's practice explores the intersections of technology, memory, and class, reflecting on how digital culture shapes the way we see and remember the world around us.
+    </p>
+    <p style="margin-top: 15px; line-height: 1.6; text-align: left;">
+      Growing up on the East Side of San José, Medina witnessed firsthand the coexistence of working-class life and the rapid expansion of The Silicon Valley. This environment sparked a fascination with the tensions between the innovation and everyday survival that exists in his community where progress and displacement coincide. Their work often focuses on capturing overlooked spaces; reimagining and preserving the stories they possess that might otherwise be forgotten through the rapidly changing climate.
+    </p>
+    <p style="margin-top: 15px; line-height: 1.6; text-align: left;">
+      In recent projects, Medina has turned toward digital media as both tool and subject. Their work reflects on the cultural and psychological effects of experiencing life through data. Such as the recurring theme of surveillance through his work. As it plays a role of both, a system of control and a normalized part of daily life that shapes our identity and perception. Medina blends humor, nostalgia, and paranoia as a subtle critique to reveal the awkward translation between contemporary digital life and our everyday human experience.
+    </p>
+    <p style="margin-top: 15px; line-height: 1.6; text-align: left;">
+      While their focus has shifted digital, the conceptual thread of analog work remains: The use of found materials and repurposed imagery parallels the digital act of remixing and recycling visual information. This approach reflects a broader interest in transformation. How forgotten or discarded elements, whether physical or virtual, can be reimagined into something new and alive.
+    </p>
+    <p style="margin-top: 15px; line-height: 1.6; text-align: left;">
+      At its core, Medina's practice seeks to document, question, and preserve. Combining empathy, critique, and a touch of humor, their work invites viewers to reflect on the intersections of community, technology, and memory. Figurative at heart but layered conceptual undertones, Jordan Medina's work captures the beautiful strangeness that is life.
+    </p>
+  `;
+  
+  document.getElementById('modal').style.display = 'flex';
+}
+
+// Open Contact modal
+function openContactModal() {
+  const modalTitle = document.getElementById('modal-title');
+  const modalText = document.getElementById('modal-text');
+  const modalVideo = document.getElementById('modal-video');
+  const modalImage = document.getElementById('modal-image');
+  // Ensure menu doesn't overlay the modal
+  if (typeof closeMenu === 'function') { try { closeMenu(); } catch (e) {} }
+  
+  modalTitle.innerText = 'contact';
+  modalVideo.style.display = 'none';
+  modalImage.style.display = 'none';
+  modalText.style.display = 'block';
+  modalText.innerHTML = `
+    <p style="line-height: 1.6; text-align: left; margin-bottom: 20px;">
+      <a href="mailto:jordanmedinuhh@gmail.com"
+         onclick="if(navigator.userAgent.includes('Chrome') || navigator.userAgent.includes('Safari')) { 
+           window.open('https://mail.google.com/mail/?view=cm&fs=1&to=jordanmedinuhh@gmail.com', '_blank');
+           return false; 
+         }"
+         target="_blank" style="color: #4A90E2; text-decoration: none; border-bottom: 1px dashed #cfcfcf; padding-bottom: 2px;">
+        email
+     </a>
+    </p>
+    <p style="line-height: 1.6; text-align: left;">
+      <a href="https://www.instagram.com/jrdanmedina/?hl=en" target="_blank" style="color: #4A90E2; text-decoration: none; border-bottom: 1px dashed #cfcfcf; padding-bottom: 2px;">instagram</a>
+    </p>
+  `;
+  
+  document.getElementById('modal').style.display = 'flex';
+}
+
+animate();
+</script>
+</body>
+</html>
