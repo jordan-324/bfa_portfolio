@@ -31,14 +31,14 @@
 
 <script>
 // ================== Carousel Setup ==================
-const iconCount = 10;
+const iconCount = 16;
 const iconSize = 100;
 const container = document.getElementById('gallery-window');
 const icons = [];
 let angle = 0;
 let velocity = 0;
 let baseSpeed = 0.0012; // slower orbit speed
-let radius = 280; // orbit radius
+let radius = 320; // orbit radius - increased for more spacing
 let hoveredIndex = -1; // track which icon is being hovered
 let orbitPaused = false; // pause/resume control
 
@@ -53,7 +53,13 @@ const projects = [
   {title: "rain+growth", description: "My goal is to express the parallels between the experience of nature and what it is to be human. By highlighting what the rain provides for nature, I’m playing with the themes of how as humans our bad, or \"rainy\" days often lead to our eventual growth. I chose to steer away from a narrative to avoid being too literal. Like many conceptual art pieces, I want the viewer to have come to the conclusion themselves about making the connection. I feel the message would come off stronger if it was open for interpretation because the viewer can find their own message. Overall, the sound and video sequences are quick and to the point in an eerily yet entertaining nature that keeps one's attention. I experimented by changing the aspect ratio to a 1:1 ratio because I think it would look more interesting in its installation. I would blow it up really big with a projector where viewers would experience the piece by immersing themselves by putting on headphones. I used many different techniques to create this project. I’ve played around with Lumetri effects on certain clips to play with the color grading to make it feel more cohesive. I also used different masking effects and vignettes where I wanted to dramatize and highlight certain clips. I also tried out new effects, such as the turbulent displacement effect feature to create a ripple like effect. I experimented a lot with the transitions such as various clips fading in and out of each other. I even used a matte tracking effect to transition from one clip to another. I played around with playback speed and even chopped up the sound to align it with the sequencing of the video. I was able to completely score the video with the emotion I wanted to evoke. I was able to change the emotion of the clips using sound design. I was able to intensify moments using levels of audio mixing. I prefer viewers to experience the audio with headphones."},
   {title: "photo—Diary", description: "For a very long time now I have used a camera as a means to logging memory by just capturing a moment. In my practice with photography, I became obsessed with the idea of snapshot photography. Just capturing a glimpse of time as it exists. Funny enough, I took myself too seriously considering this was my \"practice\" of photography and would only want to capture these moments on film, and then I'd get in my head about if I should waste an exposure on every urge I had to shoot because what if the moment wasn't interesting enough. However, once I felt like this I noticed I would just use the camera on my phone to capture it because it didn't \"matter\", however I would still shoot it anyways. Then I started to hate the idea that photography had to be shot or presented a certain way to be considered \"actual photography\" I naturally started to only ever really use my phone for photography because I always had it with me so, whenever I was out and about I would just use that, as it felt like a more organic way to shoot and document whatever street, person, or weird scene I was nearby. I collected a ton of photos over the last 10 years of shooting like this, but I basically only hoard most of this collection for myself. I started to show these photos in different exhibition installations but that's really the only way these photos have ever been seen by others. With this webpage, my goal was to give any random person a chance to take a glimpse into as many photos from my camera roll as possible. Even though my camera roll is very personal to me. I feel like it is the best way for me to make a \"self portrait\" because it gives someone the opportunity to see the things I see."},
   {title: "memorymirror", description: "An interactive art installation exploring themes of memory and reflection."},
-  {title: "headlock", description: "Digital Illustration formatted for risograph printing."}
+  {title: "headlock", description: "Digital Illustration formatted for risograph printing."},
+  {title: "top 25 san jose", description: "Bitmap Image. My first project as a DMA student. I was aiming to highlight underground live music from the local scene of San Jose. These spaces do not last long especially in San Jose."},
+  {title: "t o a s t", description: "My first every video project, I wanted to capture something I was naturally going to do in  my own life, so I figured shooting stills of my breakfast has it cooked, then putting it in reverse and making a stop motion video out of it seemed like the best way to make something so normal and boring interesting and human."},
+  {title: "blog entry: casey rheas", description: "Blog for artist Casey Rheas."},
+  {title: "time", description: "My goal for this video project was to show how intense and overwhelming time can feel, especially when someone is struggling with insomnia. I wanted to focus on that specific feeling of being stuck in your own head, watching the minutes pass by, and not being able to sleep no matter how tired you are. Time almost feels like it's moving slower in those moments, and I really wanted to highlight that emotional experience. The video follows the story of someone drifting in and out of consciousness, caught between the need to rest and the anxiety that keeps them awake. I tried to capture those moments where your body is exhausted but your mind keeps racing. As I worked on the video, I focused a lot on pacing, lighting, and sound to create a feeling of unease. I used slower transitions, darker visuals, and repetitive movements to show how time drags on during sleepless nights. I also wanted to make the audience feel like they were stuck in that loop with the character—feeling the frustration, restlessness, and the loneliness that comes with insomnia. Overall, I wanted the video to not just tell a story, but to really make the viewer feel something. This project was a way for me to express a very real and personal emotion through visual storytelling."},
+  {title: "demo '25", description: "Digital illustration using rigorus analog processing through physical print to evoke as much natural grain as possible. Album cover for Mainey - DEMO '25"},
+  {title: "pas de chat", description: "Poster design for event \"pas de chat\""}
 ];
 
 // Create 3D icons
@@ -106,6 +112,30 @@ for(let i=0;i<iconCount;i++){
   else if (i === 9) {
     front.innerHTML = `<img src="headlock.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">`;
   }
+  // Special case for Icon 11 - display bitmapimage.jpg image
+  else if (i === 10) {
+    front.innerHTML = `<img src="bitmapimage.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">`;
+  }
+  // Special case for Icon 12 - display toast.jpg image
+  else if (i === 11) {
+    front.innerHTML = `<img src="toast.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">`;
+  }
+  // Special case for Icon 13 - display Casey-Reas.jpg image
+  else if (i === 12) {
+    front.innerHTML = `<img src="Casey-Reas.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">`;
+  }
+  // Special case for Icon 14 - display time.jpg image
+  else if (i === 13) {
+    front.innerHTML = `<img src="time.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">`;
+  }
+  // Special case for Icon 15 - display mainey.jpeg image
+  else if (i === 14) {
+    front.innerHTML = `<img src="mainey.jpeg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">`;
+  }
+  // Special case for Icon 16 - display pasdechat.jpg image
+  else if (i === 15) {
+    front.innerHTML = `<img src="pasdechat.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">`;
+  }
   else {
   front.innerText = projects[i].title;
   }
@@ -152,6 +182,30 @@ for(let i=0;i<iconCount;i++){
   // Special case for Icon 10 - display headlock.jpg image flipped backwards
   else if (i === 9) {
     back.innerHTML = `<img src="headlock.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; transform: scaleX(-1);">`;
+  }
+  // Special case for Icon 11 - display bitmapimage.jpg image flipped backwards
+  else if (i === 10) {
+    back.innerHTML = `<img src="bitmapimage.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; transform: scaleX(-1);">`;
+  }
+  // Special case for Icon 12 - display toast.jpg image flipped backwards
+  else if (i === 11) {
+    back.innerHTML = `<img src="toast.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; transform: scaleX(-1);">`;
+  }
+  // Special case for Icon 13 - display Casey-Reas.jpg image flipped backwards
+  else if (i === 12) {
+    back.innerHTML = `<img src="Casey-Reas.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; transform: scaleX(-1);">`;
+  }
+  // Special case for Icon 14 - display time.jpg image flipped backwards
+  else if (i === 13) {
+    back.innerHTML = `<img src="time.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; transform: scaleX(-1);">`;
+  }
+  // Special case for Icon 15 - display mainey.jpeg image flipped backwards
+  else if (i === 14) {
+    back.innerHTML = `<img src="mainey.jpeg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; transform: scaleX(-1);">`;
+  }
+  // Special case for Icon 16 - display pasdechat.jpg image flipped backwards
+  else if (i === 15) {
+    back.innerHTML = `<img src="pasdechat.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; transform: scaleX(-1);">`;
   }
   else {
   back.innerText = 'Back ' + projects[i].title;
@@ -279,6 +333,53 @@ for(let i=0;i<iconCount;i++){
     // Special case for Icon 10 - show image
     else if (i === 9) {
       modalImage.src = 'headlock.jpg';
+      modalImage.style.display = 'block';
+      modalVideo.style.display = 'none';
+      modalText.style.display = 'block'; // Show text with image
+    }
+    // Special case for Icon 11 - show image
+    else if (i === 10) {
+      modalImage.src = 'bitmapimage.jpg';
+      modalImage.style.display = 'block';
+      modalVideo.style.display = 'none';
+      modalText.style.display = 'block'; // Show text with image
+    }
+    // Special case for Icon 12 - show Vimeo video
+    else if (i === 11) {
+      modalVideo.src = 'https://player.vimeo.com/video/814213884?h=share&autoplay=0&loop=0&title=0&byline=0&portrait=0';
+      modalVideo.style.display = 'block';
+      modalImage.style.display = 'none';
+      modalText.style.display = 'block'; // Show text below video
+    }
+    // Special case for Icon 13 - show website link and description
+    else if (i === 12) {
+      modalVideo.style.display = 'none';
+      modalImage.style.display = 'none';
+      modalText.style.display = 'block';
+      modalText.innerHTML = `
+        <p style="text-align: center; margin-bottom: 20px;"><a href="https://codepen.io/HappyMeals/pen/PoyWMQm" target="_blank" style="color: #4A90E2; text-decoration: none; font-size: 18px; font-weight: bold;">visit →</a></p>
+        <p style="margin-top: 15px; line-height: 1.4;">
+          Blog for artist Casey Rheas.
+        </p>
+      `;
+    }
+    // Special case for Icon 14 - show YouTube video
+    else if (i === 13) {
+      modalVideo.src = 'https://www.youtube.com/embed/SYvGvpsBZWk';
+      modalVideo.style.display = 'block';
+      modalImage.style.display = 'none';
+      modalText.style.display = 'block'; // Show text below video
+    }
+    // Special case for Icon 15 - show image
+    else if (i === 14) {
+      modalImage.src = 'mainey.jpeg';
+      modalImage.style.display = 'block';
+      modalVideo.style.display = 'none';
+      modalText.style.display = 'block'; // Show text with image
+    }
+    // Special case for Icon 16 - show image
+    else if (i === 15) {
+      modalImage.src = 'pasdechat.jpg';
       modalImage.style.display = 'block';
       modalVideo.style.display = 'none';
       modalText.style.display = 'block'; // Show text with image
@@ -564,6 +665,54 @@ function openModalForIcon(i) {
     modalVideo.style.display = 'none';
     modalText.style.display = 'block'; // Show text with image
   }
+  // Special case for Icon 11 - show image
+  else if (i === 10) {
+    modalImage.src = 'bitmapimage.jpg';
+    modalImage.style.display = 'block';
+    modalVideo.style.display = 'none';
+    modalText.style.display = 'block'; // Show text with image
+    modalText.innerHTML = projects[i].description;
+  }
+  // Special case for Icon 12 - show Vimeo video
+  else if (i === 11) {
+    modalVideo.src = 'https://player.vimeo.com/video/814213884?h=share&autoplay=0&loop=0&title=0&byline=0&portrait=0';
+    modalVideo.style.display = 'block';
+    modalImage.style.display = 'none';
+    modalText.style.display = 'block'; // Show text below video
+  }
+  // Special case for Icon 13 - show website link and description
+  else if (i === 12) {
+    modalVideo.style.display = 'none';
+    modalImage.style.display = 'none';
+    modalText.style.display = 'block';
+    modalText.innerHTML = `
+      <p style="text-align: center; margin-bottom: 20px;"><a href="https://codepen.io/HappyMeals/pen/PoyWMQm" target="_blank" style="color: #4A90E2; text-decoration: none; font-size: 18px; font-weight: bold;">visit →</a></p>
+      <p style="margin-top: 15px; line-height: 1.4;">
+        Blog for artist Casey Rheas.
+      </p>
+    `;
+  }
+  // Special case for Icon 14 - show YouTube video
+  else if (i === 13) {
+    modalVideo.src = 'https://www.youtube.com/embed/SYvGvpsBZWk';
+    modalVideo.style.display = 'block';
+    modalImage.style.display = 'none';
+    modalText.style.display = 'block'; // Show text below video
+  }
+  // Special case for Icon 15 - show image
+  else if (i === 14) {
+    modalImage.src = 'mainey.jpeg';
+    modalImage.style.display = 'block';
+    modalVideo.style.display = 'none';
+    modalText.style.display = 'block'; // Show text with image
+  }
+  // Special case for Icon 16 - show image
+  else if (i === 15) {
+    modalImage.src = 'pasdechat.jpg';
+    modalImage.style.display = 'block';
+    modalVideo.style.display = 'none';
+    modalText.style.display = 'block'; // Show text with image
+  }
   else {
     modalVideo.style.display = 'none';
     modalImage.style.display = 'none';
@@ -621,19 +770,21 @@ function openContactModal() {
   modalImage.style.display = 'none';
   modalText.style.display = 'block';
   modalText.innerHTML = `
-    <p style="line-height: 1.6; text-align: left; margin-bottom: 20px;">
-      <a href="mailto:jordanmedinuhh@gmail.com"
-         onclick="if(navigator.userAgent.includes('Chrome') || navigator.userAgent.includes('Safari')) { 
-           window.open('https://mail.google.com/mail/?view=cm&fs=1&to=jordanmedinuhh@gmail.com', '_blank');
-           return false; 
-         }"
-         target="_blank" style="color: #4A90E2; text-decoration: none; border-bottom: 1px dashed #cfcfcf; padding-bottom: 2px;">
-        email
-     </a>
-    </p>
-    <p style="line-height: 1.6; text-align: left;">
-      <a href="https://www.instagram.com/jrdanmedina/?hl=en" target="_blank" style="color: #4A90E2; text-decoration: none; border-bottom: 1px dashed #cfcfcf; padding-bottom: 2px;">instagram</a>
-    </p>
+    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; margin-top: 40px;">
+      <p style="line-height: 1.6; text-align: center; margin-bottom: 20px;">
+        <a href="mailto:jordanmedinuhh@gmail.com"
+           onclick="if(navigator.userAgent.includes('Chrome') || navigator.userAgent.includes('Safari')) { 
+             window.open('https://mail.google.com/mail/?view=cm&fs=1&to=jordanmedinuhh@gmail.com', '_blank');
+             return false; 
+           }"
+           target="_blank" style="color: #2c3e50; text-decoration: none; border-bottom: 1px dashed #cfcfcf; padding-bottom: 2px;">
+          email
+        </a>
+      </p>
+      <p style="line-height: 1.6; text-align: center;">
+        <a href="https://www.instagram.com/jrdanmedina/?hl=en" target="_blank" style="color: #2c3e50; text-decoration: none; border-bottom: 1px dashed #cfcfcf; padding-bottom: 2px;">instagram</a>
+      </p>
+    </div>
   `;
   
   document.getElementById('modal').style.display = 'flex';
